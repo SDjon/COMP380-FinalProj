@@ -1,6 +1,6 @@
 
 /**
- * Project 3: BackPropogation Neural Networks 
+ * Project 3: BackPropogation Neural Networks
  * Authors: Jonathan Rivera, Gianpaolo Tabora, Kian Drees, Precee-Noel Ginigeme
  * Class: COMP 380, Neural Networks
  * Prof: Eric Jiang
@@ -16,10 +16,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BackPropogationNet {
 
     public static int rowDim;
     public static int colDim;
+
+
 
     public static void main(String[] args) {
         receiveInput();
@@ -46,14 +55,12 @@ public class BackPropogationNet {
     }
 
     public static void trainingSpecs(Scanner scanner) {
-        scanner.nextLine(); // get rid of newline read from previous nextInt()
-        System.out.println("Enter the training data folder name:");
-        String trainingDataFileName = scanner.nextLine();
-
+        scanner.nextLine();
         System.out.println("Enter a file name to save the trained weight values:");
         String outputWeightFileName = scanner.nextLine();
 
-        //trainNetwork(outputWeightFileName, trainingDataFileName);
+        trainNetwork(outputWeightFileName);
+
 
     }
 
@@ -72,15 +79,73 @@ public class BackPropogationNet {
 
     }
 
-    public static ArrayList<int[]> readData(String filename) {
+    public static ArrayList<Integer> readData(File file) {
+        ArrayList<Integer> inputVector = new ArrayList<>();
+        try {
+            BufferedImage image = ImageIO.read(file);
+            int width = image.getWidth();
+            int height = image.getHeight();
 
-        return null;
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int pixel = image.getRGB(x, y);
 
+                    // Extract RGB components
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = pixel & 0xff;
+
+                    // Simple brightness average
+                    int brightness = (red + green + blue) / 3;
+
+                    if (brightness < 128) { // Dark pixel = black
+                        inputVector.add(1);
+                    } else { // Light pixel = white
+                        inputVector.add(-1);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to read image: " + file.getName());
+        }
+        return inputVector;
     }
 
-    public static void trainNetwork(String fileToWrite, String trainingData) {
+    public static void gatherData(List<String> labels,List<ArrayList<Integer>> inputVectorsOfImages ) {
+        File pestsFolder = new File("Pests"); // Assuming "Pests" folder is in project root
 
-        
+        if (!pestsFolder.exists() || !pestsFolder.isDirectory()) {
+            System.err.println("Pests folder not found!");
+            return;
+        }
+
+        for (File pestTypeFolder : pestsFolder.listFiles()) {
+            if (pestTypeFolder.isDirectory()) {
+                String pestName = pestTypeFolder.getName();
+
+                for (File imageFile : pestTypeFolder.listFiles()) {
+                    if (imageFile.isFile() && isImageFile(imageFile)) {
+                        ArrayList<Integer> inputVector = readData(imageFile);
+                        labels.add(pestName);
+                        inputVectorsOfImages.add(inputVector);
+                    }
+                }
+            }
+        }
+    }
+
+    // Helper method to check if it's a PNG image
+    private static boolean isImageFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg");
+    }
+
+
+
+    public static void trainNetwork(String fileToWrite) {
+        List<String> labels = new ArrayList<>();
+         List<ArrayList<Integer>> globalData = new ArrayList<>();
+         gatherData(labels,globalData);
     }
 
     public static void writeWeightMatrixToFile(String fileToWrite, int[][] weightMatrix) {
@@ -152,7 +217,7 @@ public class BackPropogationNet {
 
     public static void testNetwork(String savedWeightsFilename, String testingDataFilename, String resultsFilename) {
 
-        
+
     }
 
     /**
