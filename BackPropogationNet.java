@@ -113,14 +113,14 @@ public class BackPropogationNet {
 
 
     public static void gatherData(List<String> labels,List<ArrayList<Integer>> inputVectorsOfImages ) {
-        File pestsFolder = new File("Pests"); // Assuming "Pests" folder is in project root
+        File trainingDataFolder = new File("Training_data"); // Assuming "Training_data" folder is in project root
 
-        if (!pestsFolder.exists() || !pestsFolder.isDirectory()) {
+        if (!trainingDataFolder.exists() || !trainingDataFolder.isDirectory()) {
             System.err.println("Pests folder not found!");
             return;
         }
 
-        for (File pestTypeFolder : pestsFolder.listFiles()) {
+        for (File pestTypeFolder : trainingDataFolder.listFiles()) {
             if (pestTypeFolder.isDirectory()) {
                 String pestName = pestTypeFolder.getName();
 
@@ -146,36 +146,56 @@ public class BackPropogationNet {
 
     public static void trainNetwork(String fileToWrite) {
         List<String> labels = new ArrayList<>();
-         List<ArrayList<Integer>> inputVectorsOfImages = new ArrayList<>();
-         gatherData(labels,inputVectorsOfImages);
+        List<ArrayList<Integer>> inputVectorsOfImages = new ArrayList<>();
+        gatherData(labels, inputVectorsOfImages);
 
         int[][] weightMatrixV = new int[250000][2000]; //i by j
-        int[][] weightMatrixW = new int[2000][4];//j by k
+        int[][] weightMatrixW = new int[2000][4]; //j by k
         //initialize weights to random values between -0.5 and 0.5 later
-        
+
         boolean converged = false;
-        while(!converged){
+        while (!converged) {
             //step 2 for each training pair, do 3-8
             for (ArrayList<Integer> inputVector : inputVectorsOfImages) {
                 //feedforward
                 //step 3 each input receives input signal and broadcasts signal to all units in hidden layer
-                //step 4 each hidden units sums its weighted input signals, applies its activation function 
-                // to compute its output signal, and sends this signal to all units in the layer above
+                int[] inputLayer = new int[250000];
+                for (int i = 0; i < 250000; i++) {
+                    inputLayer[i] = inputVector.get(i);
+                }
+
+                //step 4 each hidden unit sums its weighted input signals, applies its activation function
+                //to compute its output signal, and sends this signal to all units in the layer above
+                int[] hiddenLayer = new int[2000];
+                for (int j = 0; j < 2000; j++) {
+                    int sum = 0;
+                    for (int i = 0; i < 250000; i++) {
+                        sum += inputLayer[i] * weightMatrixV[i][j];
+                    }
+                    hiddenLayer[j] = activationFunction(sum, 0); // Assuming activationFunction(y_in, previous_y_i)
+                }
+
                 //step 5 each output unit sums weighted input signals and applies activation function to compute output signal
-                
+                int[] outputLayer = new int[4];
+                for (int k = 0; k < 4; k++) {
+                    int sum = 0;
+                    for (int j = 0; j < 2000; j++) {
+                        sum += hiddenLayer[j] * weightMatrixW[j][k];
+                    }
+                    outputLayer[k] = activationFunction(sum, 0);
+                }
+
                 //backpropogation of error
-                //step 6 each output unit receives a target pattern corresponding to input training pattern, computes its 
+                //step 6 each output unit receives a target pattern corresponding to input training pattern, computes its
                 // error information term, then calculates its weight correction term and bias correction term,and sends error term to units in layer below
                 //step 7 each hidden unit sums its delta inputs, multiplies by derivative of its activation function to calculate its error information term,
                 //and calculates its weights correction term and bias correction term
                 //step 8 each output unit updates its bias and weights , and each hidden unit updates its bias and weights
             }
             //step 9, test stopping condition (stop if error goes below threshold)
-            
         }
-
-
     }
+
 
     public static void writeWeightMatrixToFile(String fileToWrite, int[][] weightMatrix) {
         /**
