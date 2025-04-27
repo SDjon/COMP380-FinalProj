@@ -155,18 +155,20 @@ public class BackPropogationNet {
         boolean converged = false;
         while(!converged){
             //step 2 for each training pair, do 3-8
+            for (ArrayList<Integer> inputVector : inputVectorsOfImages) {
                 //feedforward
                 //step 3 each input receives input signal and broadcasts signal to all units in hidden layer
                 //step 4 each hidden units sums its weighted input signals, applies its activation function 
                 // to compute its output signal, and sends this signal to all units in the layer above
                 //step 5 each output unit sums weighted input signals and applies activation function to compute output signal
+                
                 //backpropogation of error
                 //step 6 each output unit receives a target pattern corresponding to input training pattern, computes its 
                 // error information term, then calculates its weight correction term and bias correction term,and sends error term to units in layer below
                 //step 7 each hidden unit sums its delta inputs, multiplies by derivative of its activation function to calculate its error information term,
                 //and calculates its weights correction term and bias correction term
                 //step 8 each output unit updates its bias and weights , and each hidden unit updates its bias and weights
-            
+            }
             //step 9, test stopping condition (stop if error goes below threshold)
             
         }
