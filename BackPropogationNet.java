@@ -25,11 +25,6 @@ import java.util.List;
 
 public class BackPropogationNet {
 
-    public static int rowDim;
-    public static int colDim;
-
-
-
     public static void main(String[] args) {
         receiveInput();
     }
@@ -154,8 +149,8 @@ public class BackPropogationNet {
          List<ArrayList<Integer>> inputVectorsOfImages = new ArrayList<>();
          gatherData(labels,inputVectorsOfImages);
 
-        int[][] weightMatrixV = new int[colDim*rowDim][colDim*rowDim];
-        int[][] weightMatrixW = new int[colDim*rowDim][colDim*rowDim];
+        int[][] weightMatrixV = new int[250000][2000]; //i by j
+        int[][] weightMatrixW = new int[2000][4];//j by k
         //initialize weights to random values between -0.5 and 0.5 later
         
         boolean converged = false;
@@ -193,9 +188,9 @@ public class BackPropogationNet {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToWrite))) {
             int size = weightMatrix.length;
 
-            writer.write(rowDim + " //row length");
+            //writer.write(rowDim + " //row length");
             writer.newLine();
-            writer.write(colDim + " //col length");
+            //writer.write(colDim + " //col length");
             writer.newLine();
             writer.newLine();
 
@@ -228,8 +223,8 @@ public class BackPropogationNet {
         List<int[]> rows = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            rowDim = Integer.parseInt(reader.readLine().trim().split("\\s+")[0]);
-            colDim = Integer.parseInt(reader.readLine().trim().split("\\s+")[0]);
+            //rowDim = Integer.parseInt(reader.readLine().trim().split("\\s+")[0]);
+            //colDim = Integer.parseInt(reader.readLine().trim().split("\\s+")[0]);
             reader.readLine();
 
             String line;
