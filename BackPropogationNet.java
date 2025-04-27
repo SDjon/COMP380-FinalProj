@@ -145,8 +145,8 @@ public class BackPropogationNet {
 
     public static void trainNetwork(String fileToWrite) {
         List<String> labels = new ArrayList<>();
-         List<ArrayList<Integer>> globalData = new ArrayList<>();
-         gatherData(labels,globalData);
+         List<ArrayList<Integer>> inputVectorsOfImages = new ArrayList<>();
+         gatherData(labels,inputVectorsOfImages);
       
         int[][] weightMatrixV = new int[colDim*rowDim][colDim*rowDim];
         int[][] weightMatrixW = new int[colDim*rowDim][colDim*rowDim];
