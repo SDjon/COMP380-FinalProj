@@ -82,13 +82,18 @@ public class BackPropogationNet {
     public static ArrayList<Integer> readData(File file) {
         ArrayList<Integer> inputVector = new ArrayList<>();
         try {
-            BufferedImage image = ImageIO.read(file);
-            int width = image.getWidth();
-            int height = image.getHeight();
+            BufferedImage originalImage = ImageIO.read(file);
+
+            // Scale the image to 500x500
+            BufferedImage scaledImage = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
+            scaledImage.getGraphics().drawImage(originalImage, 0, 0, 500, 500, null);
+
+            int width = scaledImage.getWidth();
+            int height = scaledImage.getHeight();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    int pixel = image.getRGB(x, y);
+                    int pixel = scaledImage.getRGB(x, y);
 
                     // Extract RGB components
                     int red = (pixel >> 16) & 0xff;
@@ -110,6 +115,7 @@ public class BackPropogationNet {
         }
         return inputVector;
     }
+
 
     public static void gatherData(List<String> labels,List<ArrayList<Integer>> inputVectorsOfImages ) {
         File pestsFolder = new File("Pests"); // Assuming "Pests" folder is in project root
@@ -147,7 +153,7 @@ public class BackPropogationNet {
         List<String> labels = new ArrayList<>();
          List<ArrayList<Integer>> inputVectorsOfImages = new ArrayList<>();
          gatherData(labels,inputVectorsOfImages);
-      
+
         int[][] weightMatrixV = new int[colDim*rowDim][colDim*rowDim];
         int[][] weightMatrixW = new int[colDim*rowDim][colDim*rowDim];
         //initialize weights to random values between -0.5 and 0.5 later
