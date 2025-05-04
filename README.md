@@ -18,5 +18,3 @@
 - Pillow → image loading and processing
 - matplotlib → data visualization and plotting
 - scikit-learn → train/test split and machine learning tools
-You can install all required packages at once with: 
-- pip install tensorflow numpy pillow matplotlib scikit-learn
