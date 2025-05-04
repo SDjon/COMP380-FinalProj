@@ -12,6 +12,8 @@ TRAIN_DATA_DIR = 'Training_data'
 TEST_DATA_DIR = 'Testing_data'
 CSV_OUTPUT = 'predictions.csv'
 
+userConfidenceChoice = float(input("Enter a confidence level to spray a pest(0.0 - 1.0): "))
+
 def load_images(data_dir, class_names=None):
     images = []
     labels = []
@@ -85,7 +87,7 @@ with open(CSV_OUTPUT, mode='w', newline='') as file:
         predicted_label = class_names[predicted_class]
 
         # Spray logic
-        if confidence >= 0.6:
+        if confidence >= userConfidenceChoice:
             decision = f"Spray → Detected: {predicted_label}"
         else:
             decision = f"No Spray (unknown or low confidence) → Guess: {predicted_label}"
