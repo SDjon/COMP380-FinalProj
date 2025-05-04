@@ -11,3 +11,12 @@
   2. Low_test Folder: Contains images with 10% corruption
   3. Med_test Folder: Contains images with 20% corruption
 - BackPropogationNet.java: Main working file.
+
+[**Required Packages**]
+- TensorFlow → neural network framework
+- NumPy → numerical operations and arrays
+- Pillow → image loading and processing
+- matplotlib → data visualization and plotting
+- scikit-learn → train/test split and machine learning tools
+You can install all required packages at once with: 
+- pip install tensorflow numpy pillow matplotlib scikit-learn
