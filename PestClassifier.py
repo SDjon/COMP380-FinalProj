@@ -94,7 +94,7 @@ with open(CSV_OUTPUT, mode='w', newline='') as file:
         writer.writerow([idx, image_paths[idx], predicted_label, f"{confidence:.2f}", decision])
 
         # Display image with matplotlib
-        img_to_show = (X_test[idx].squeeze() + 1) / 2  # un-bipolar to [0,1] for display
+        img_to_show = (X_test[idx].squeeze() + 1) / 2  # un-bipolar for display
         plt.imshow(img_to_show, cmap='gray')
         plt.title(f"Image {idx}: {decision}\nConfidence: {confidence:.2f}")
         plt.axis('off')
