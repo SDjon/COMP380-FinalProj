@@ -1,14 +1,15 @@
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras import layers, models, regularizers
 import numpy as np
 import os
 from PIL import Image
 import csv
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.callbacks import EarlyStopping
 
 # Global constants
-IMG_SIZE = (520, 520)  # slightly bigger than 500x500
+IMG_SIZE = (500, 500)
 TRAIN_DATA_DIR = 'Training_data'
 TEST_DATA_DIR = 'small_test'
 CSV_OUTPUT = 'predictions.csv'
@@ -16,13 +17,12 @@ MODEL_FILE = 'mymodel.h5'
 
 
 def load_images(data_dir, class_names=None):
-    """Load images from directory and preprocess them."""
+    """Load grayscale images from directory and preprocess them."""
     images, labels, image_paths = [], [], []
     if class_names is None:
         class_names = sorted(os.listdir(data_dir))
     class_to_index = {name: idx for idx, name in enumerate(class_names)}
 
-    # Loop over folders in data_dir
     for class_name in os.listdir(data_dir):
         folder_path = os.path.join(data_dir, class_name)
         if not os.path.isdir(folder_path):
@@ -45,16 +45,24 @@ def load_images(data_dir, class_names=None):
 
 
 def build_model(num_classes):
-    """Create and compile a simplified CNN model."""
+    """Create and compile a CNN model with regularization and augmentation."""
+    data_augmentation = tf.keras.Sequential([
+        layers.RandomFlip("horizontal"),
+        layers.RandomZoom(0.1),
+    ])
+
+    l2_reg = regularizers.l2(0.001)
+
     model = models.Sequential([
-        layers.Input(shape=(520, 520, 1)),
-        layers.Conv2D(16, (3, 3), activation='relu'),
+        layers.Input(shape=(500, 500, 1)),  # grayscale, 1 channel
+        data_augmentation,
+        layers.Conv2D(16, (3, 3), activation='relu', kernel_regularizer=l2_reg),
         layers.MaxPooling2D((2, 2)),
-        layers.Conv2D(32, (3, 3), activation='relu'),
+        layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=l2_reg),
         layers.MaxPooling2D((2, 2)),
         layers.Flatten(),
-        layers.Dense(64, activation='relu'),
-        layers.Dropout(0.3),
+        layers.Dense(64, activation='relu', kernel_regularizer=l2_reg),
+        layers.Dropout(0.4),
         layers.Dense(num_classes, activation='softmax')
     ])
 
@@ -64,7 +72,6 @@ def build_model(num_classes):
     return model
 
 
-
 def train_model():
     """Train the model and save it to file."""
     X_train, y_train, class_names, _ = load_images(TRAIN_DATA_DIR)
@@ -72,10 +79,19 @@ def train_model():
         X_train, y_train, test_size=0.2, random_state=42)
 
     model = build_model(len(class_names))
-    model.fit(X_train_split, y_train_split, epochs=7, batch_size=16,
-              validation_data=(X_val_split, y_val_split))
+
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+    history = model.fit(X_train_split, y_train_split,
+                        epochs=20, batch_size=4,  # reduced batch size
+                        validation_data=(X_val_split, y_val_split),
+                        callbacks=[early_stopping],
+                        verbose=1)
     model.save(MODEL_FILE)
     print(f"Model saved to {MODEL_FILE}")
+
+    final_val_acc = history.history['val_accuracy'][-1]
+    print(f"Final Validation Accuracy: {final_val_acc:.4f}")
 
 
 def run_model(user_confidence_choice):
