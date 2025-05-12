@@ -5,12 +5,21 @@
 [**Title**] LeafLens AI: An Image Classification Network for Automated Pest Control <br />
 
 [**Repo layout**] 
-- Training Folder: Contains 4 different pests with 4 different angles for training. Grasshopper, Snail, Rat, & Rabbit
-- Testing Folder: Contains 3 different folders with no/low/medium corruption testing images
-  1. Control_test Folder: Contains control images to see if the neural network
-  2. Low_test Folder: Contains images with 10% corruption
-  3. Med_test Folder: Contains images with 20% corruption
-- BackPropogationNet.java: Main working file.
+- train Folder: Contains 13 different insects.
+- Testing_data Folder: Contains same training images as to test the classification.
+- small_test: Small test for the spary or no spray function of LeafLens.
+- best_model.h5: The model of LeafLens we are using.
+- class_indices.json: Indecies associated with insects.
+- LeafLens.py: Main working file of LeafLens.
+- test.csv: File to access images for LeafLens for testing
+- train.csv: File to access images for LeafLens for training
+- oldVersions Folder: Contains outdated versions. So show out progress.
+  1. BackPropogationNet.java: Past working file where we built the neural net from scratch.
+  2. PestClassifer (old, k-fold).py: Old LeafLens working file that worked with k-fold.
+  3. PestClassifer (old).py: Old LeafLens working file.
+  4. WeightContainer.java: Old helper file for BackPropogationNet.java.
+
+
 
 [**Required Packages**]
 - TensorFlow → neural network framework
