@@ -18,3 +18,4 @@
 - Pillow → image loading and processing
 - matplotlib → data visualization and plotting
 - scikit-learn → train/test split and machine learning tools
+- pandas 
