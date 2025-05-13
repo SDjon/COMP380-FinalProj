@@ -28,3 +28,4 @@
 - matplotlib → data visualization and plotting
 - scikit-learn → train/test split and machine learning tools
 - pandas → reads csv files
+- pyqt5 → GUI for visualization

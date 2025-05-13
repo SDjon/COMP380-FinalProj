@@ -217,13 +217,13 @@ def test_with_csv():
 if __name__ == "__main__":
     print("Select an option:")
     print("1 - Train Model")
-    print("2 - Test Images using 'test.csv'")
+    print("2 - Test Model")
     choice = input("Enter 1 or 2: ").strip()
 
     if choice == "1":
         train_model()
     elif choice == "2":
-        print("Use GUI for testing? (y/n): ", end="")
+        print("Use GUI for live testing? (y/n): ", end="")
         gui_choice = input().strip().lower()
         if gui_choice == 'y':
             run_testing_gui()
