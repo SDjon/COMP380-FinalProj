@@ -20,6 +20,77 @@ TEST_CSV = 'test.csv'
 TEST_IMAGE_DIR = 'Testing_data'
 MODEL_FILE = 'best_model.h5'
 
+def run_testing_gui():
+    import sys
+    from PyQt5.QtWidgets import (
+        QApplication, QWidget, QLabel, QPushButton,
+        QVBoxLayout, QFileDialog, QTextEdit
+    )
+    from PyQt5.QtGui import QPixmap
+    from PyQt5.QtCore import Qt
+    import numpy as np
+    from tensorflow.keras.preprocessing.image import load_img, img_to_array
+
+    class LeafLensApp(QWidget):
+        def __init__(self):
+            super().__init__()
+            self.setWindowTitle("LeafLens - Image Tester")
+            self.setGeometry(100, 100, 600, 700)
+
+            self.model = load_model(MODEL_FILE)
+            self.class_indices = load_class_indices()
+            self.index_to_class = {v: k for k, v in self.class_indices.items()}
+
+            self.init_ui()
+
+        def init_ui(self):
+            layout = QVBoxLayout()
+
+            self.image_label = QLabel("Image Preview")
+            self.image_label.setAlignment(Qt.AlignCenter)
+            self.image_label.setFixedHeight(300)
+            layout.addWidget(self.image_label)
+
+            self.result_text = QTextEdit("Prediction results will appear here.")
+            self.result_text.setReadOnly(True)
+            layout.addWidget(self.result_text)
+
+            self.button = QPushButton("Select Image")
+            self.button.clicked.connect(self.select_image)
+            layout.addWidget(self.button)
+
+            self.setLayout(layout)
+
+        def select_image(self):
+            file_path, _ = QFileDialog.getOpenFileName(self, "Select an image", "", "Images (*.png *.jpg *.jpeg)")
+            if not file_path:
+                return
+
+            # Show image
+            pixmap = QPixmap(file_path).scaled(300, 300, Qt.KeepAspectRatio)
+            self.image_label.setPixmap(pixmap)
+
+            # Predict
+            raw_img = load_img(file_path, target_size=IMG_SIZE)
+            img_array = img_to_array(raw_img) / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
+
+            prediction = self.model.predict(img_array, verbose=0)[0]
+            top_indices = prediction.argsort()[-3:][::-1]
+
+            result_lines = ["Top 3 Predictions:\n"]
+            for idx in top_indices:
+                label = self.index_to_class.get(idx, f"[Unknown class {idx}]")
+                conf = prediction[idx] * 100
+                result_lines.append(f"{label}: {conf:.2f}%")
+
+            self.result_text.setPlainText("\n".join(result_lines))
+
+    app = QApplication(sys.argv)
+    window = LeafLensApp()
+    window.show()
+    sys.exit(app.exec_())
+
 def train_model():
     print("Starting training...")
 
@@ -152,6 +223,11 @@ if __name__ == "__main__":
     if choice == "1":
         train_model()
     elif choice == "2":
-        test_with_csv()
+        print("Use GUI for testing? (y/n): ", end="")
+        gui_choice = input().strip().lower()
+        if gui_choice == 'y':
+            run_testing_gui()
+        else:
+            test_with_csv()
     else:
         print("Invalid option.")
