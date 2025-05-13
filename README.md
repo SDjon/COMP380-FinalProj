@@ -25,7 +25,6 @@
 - TensorFlow → neural network framework
 - NumPy → numerical operations and arrays
 - Pillow → image loading and processing
-- matplotlib → data visualization and plotting
 - scikit-learn → train/test split and machine learning tools
 - pandas → reads csv files
-- pyqt5 → GUI for visualization
+- pyqt5 → GUI for visualization and live testing

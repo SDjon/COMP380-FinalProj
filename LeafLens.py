@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.models import Model, load_model
@@ -197,19 +196,13 @@ def test_with_csv():
         pred_index = np.argmax(preds)
         pred_label = index_to_class[pred_index]
         confidence = np.max(preds)
-
-        plt.imshow(img)
-        plt.axis('off')
         if confidence < 0.5:
-            plt.title("(NO SPRAY) Uncertain Prediction")
             if pred_label != true_label:
                 correct += 1
         else:
-            plt.title(f"(SPRAY) Predicted: {pred_label} ({confidence*100:.2f}% confidence)")
             if pred_label == true_label:
                 correct += 1
         total += 1
-        #Optional: plt.show() to see the image that the model saw during the test
 
     accuracy = (correct / total) * 100 if total > 0 else 0
     print(f"\n Final Test Accuracy: {accuracy:.2f}% on {total} images.")
