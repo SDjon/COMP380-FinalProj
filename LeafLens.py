@@ -82,6 +82,13 @@ def run_testing_gui():
                 label = self.index_to_class.get(idx, f"[Unknown class {idx}]")
                 conf = prediction[idx] * 100
                 result_lines.append(f"{label}: {conf:.2f}%")
+            # display the model's choice of SPRAY or NO SPRAY based on top prediction's confidence level
+            top_idx = top_indices[0]
+            top_conf = prediction[top_idx]
+            if top_conf >= 0.5:
+                result_lines.append("\n SPRAY")
+            else:
+                result_lines.append("\n NO SPRAY")
 
             self.result_text.setPlainText("\n".join(result_lines))
 
